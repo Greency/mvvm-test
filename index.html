@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Page Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+    <script>
+        class Cy{
+            //$callback = null
+            //$data = null
+            constructor(options, callback){
+                this.$data = options.data;
+                this.$callback = callback;
+                this.initData(this);
+            }
+
+            initData(cm){
+                let keys = Object.keys(cm.$data),
+                    i = keys.length;
+
+                while(i--){
+                    console.log('i: ', i);
+
+                    this.proxy(cm, '$data', keys[i]);
+                }
+            }
+
+            proxy(target, sourceKey, key){
+                Object.defineProperty(target, key, {
+                    set(val){
+                        this.$callback(key, val);
+                        console.log(`${key} 的值改为： ${val}`);
+                        this[sourceKey][key] = val;
+                    },
+                    get(){
+                        return this[sourceKey][key];
+                    }
+                });
+            }
+        }
+    </script>
+    <script>
+        var c = new Cy({
+            data: {
+                a: 1,
+                b: '3'
+            }
+        },function(key, val){
+            console.log('callback: ', key, val);
+        });
+
+        c.a = '2';
+        c.b = 'bbbbbb'
+    </script>
+</body>
+</html>
